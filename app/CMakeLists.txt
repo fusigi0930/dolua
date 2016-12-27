@@ -20,6 +20,54 @@ add_library( # Sets the name of the library.
              # file are automatically included.
              src/main/cpp/native-lib.cpp )
 
+add_library(
+			lua
+
+			SHARED
+
+			src/main/cpp/lua-5.3.2/src/lapi.c
+			src/main/cpp/lua-5.3.2/src/lauxlib.c
+			src/main/cpp/lua-5.3.2/src/lbaselib.c
+			src/main/cpp/lua-5.3.2/src/lbitlib.c
+			src/main/cpp/lua-5.3.2/src/lcode.c
+			src/main/cpp/lua-5.3.2/src/lcorolib.c
+			src/main/cpp/lua-5.3.2/src/lctype.c
+			src/main/cpp/lua-5.3.2/src/ldblib.c
+			src/main/cpp/lua-5.3.2/src/ldebug.c
+			src/main/cpp/lua-5.3.2/src/ldo.c
+			src/main/cpp/lua-5.3.2/src/ldump.c
+			src/main/cpp/lua-5.3.2/src/lfunc.c
+			src/main/cpp/lua-5.3.2/src/lgc.c
+			src/main/cpp/lua-5.3.2/src/linit.c
+			src/main/cpp/lua-5.3.2/src/liolib.c
+			src/main/cpp/lua-5.3.2/src/llex.c
+			src/main/cpp/lua-5.3.2/src/lmathlib.c
+			src/main/cpp/lua-5.3.2/src/lmem.c
+			src/main/cpp/lua-5.3.2/src/loadlib.c
+			src/main/cpp/lua-5.3.2/src/lobject.c
+			src/main/cpp/lua-5.3.2/src/lopcodes.c
+			src/main/cpp/lua-5.3.2/src/loslib.c
+			src/main/cpp/lua-5.3.2/src/lparser.c
+			src/main/cpp/lua-5.3.2/src/lstate.c
+			src/main/cpp/lua-5.3.2/src/lstring.c
+			src/main/cpp/lua-5.3.2/src/lstrlib.c
+			src/main/cpp/lua-5.3.2/src/ltable.c
+			src/main/cpp/lua-5.3.2/src/ltablib.c
+			src/main/cpp/lua-5.3.2/src/ltm.c
+			src/main/cpp/lua-5.3.2/src/lundump.c
+			src/main/cpp/lua-5.3.2/src/lutf8lib.c
+			src/main/cpp/lua-5.3.2/src/lvm.c
+			src/main/cpp/lua-5.3.2/src/lzio.c
+)
+
+target_compile_definitions(
+            lua
+            PUBLIC
+            ANDROID_LUA=1
+            LUA_USE_C89=1
+)
+
+
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
 # default, you only need to specify the name of the public NDK library
