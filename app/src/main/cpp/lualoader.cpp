@@ -4,33 +4,14 @@
 
 #include "lualoader.h"
 #include "luareplace.h"
+#include <string>
 #include <sstream>
 
 static const struct luaL_Reg override_func[] = {
 		{ "print", NLuaFunc::luaPrint },
+
 		{ NULL, NULL }
 };
-
-int NLuaFunc::luaPrint(lua_State *L) {
-	std::stringstream s;
-
-	lua_gettop(L);
-
-	for (int i=1; i<=lua_gettop(L); i++) {
-		switch(lua_type(L, i)) {
-			default: break;
-			case LUA_TSTRING:
-				s << lua_tostring(L, i);
-				break;
-			case LUA_TNUMBER:
-				s << lua_tointeger(L, i);
-				break;
-		}
-	}
-
-	ALOG("%s\n", s.str().c_str());
-	return 0;
-}
 
 static void registerFunc(lua_State *L) {
 	if (NULL == L) return;
@@ -66,4 +47,41 @@ void NLuaLoader::runString(long lua_state, char *szLua) {
 	if (NULL == szLua) return;
 
 	luaL_dostring(lua, szLua);
+}
+
+static void adjustLuaPath(lua_State *L, char *file) {
+	if (NULL == L) return;
+
+	std::string szPath=file;
+	int pos=szPath.rfind('/');
+	if (pos != std::string::npos) {
+		std::stringstream s;
+		lua_getglobal(L, "package");
+		lua_getfield(L, -1, "path");
+		s << lua_tostring(L, -1) << ";";
+		s << szPath.substr(0, pos) << "/?.lua;";
+		lua_pop(L, 1);
+		lua_pushstring(L, s.str().c_str());
+		lua_setfield(L, -2, "path");
+		lua_pop(L, 1);
+
+	}
+}
+
+void NLuaLoader::runFile(long lua_state, char *file) {
+	lua_State *lua=reinterpret_cast<lua_State*>(lua_state);
+	if (NULL == lua) return;
+	if (NULL == file) return;
+
+	adjustLuaPath(lua, file);
+
+	if (luaL_loadfile(lua, file)) {
+		ALOG("load %s failed", file);
+		return;
+	}
+
+	if (lua_pcall(lua, 0, LUA_MULTRET, 0)) {
+		ALOG("run luan failed");
+		return;
+	}
 }

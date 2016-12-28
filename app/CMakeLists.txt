@@ -27,6 +27,7 @@ add_library( # Sets the name of the library.
 			# file are automatically included.
 			src/main/cpp/native-lib.cpp
 			src/main/cpp/lualoader.cpp
+			src/main/cpp/luafunc.cpp
 )
 
 add_dependencies(

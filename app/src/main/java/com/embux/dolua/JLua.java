@@ -30,8 +30,20 @@ public class JLua {
 		luaString(mLua, str);
 	}
 
+	public void runFile(String str) {
+		final String szFile=str;
+		new Runnable() {
+			@Override
+			public void run() {
+				Log.i(TAG, "runFile: " + szFile);
+				luaFile(mLua, szFile);
+			}
+		};
+	}
+
 	// native functions
 	public native long initLua();
 	public native void closeLua(long lua);
 	public native void luaString(long lua, String str);
+	public native void luaFile(long lua, String str);
 }

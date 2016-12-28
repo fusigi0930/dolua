@@ -8,6 +8,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
+        <service
+            android:name=".LuaService"
+            android:exported="false">
+        </service>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
