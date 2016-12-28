@@ -31,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
     // Example of a call to a native method
     TextView tv = (TextView) findViewById(R.id.sample_text);
     tv.setText(stringFromJNI());
+
+        Long lua=initLua();
+        if (0 != lua) {
+            luaString(lua, "print('lua print!!')");
+            closeLua(lua);
+        }
     }
 
     @Override
@@ -60,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+    public native long initLua();
+    public native void closeLua(long lua);
+    public native void luaString(long lua, String str);
 
     // Used to load the 'native-lib' library on application startup.
     static {
