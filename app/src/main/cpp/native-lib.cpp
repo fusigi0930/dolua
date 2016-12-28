@@ -1,11 +1,13 @@
 #include <jni.h>
 #include <string>
+#include "lualoader.h"
 
-extern "C"
+extern "C" {
 jstring
 Java_com_embux_dolua_MainActivity_stringFromJNI(
-        JNIEnv* env,
+        JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
+}
 }
