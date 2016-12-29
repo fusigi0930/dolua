@@ -30,6 +30,7 @@ JNIEXPORT void Java_com_embux_dolua_JLua_luaString(JNIEnv *env, jobject, jlong l
 
 JNIEXPORT void Java_com_embux_dolua_JLua_luaFile(JNIEnv *env, jobject, jlong lua, jstring str) {
 	char *szFile = const_cast<char*>(env->GetStringUTFChars(str, NULL));
+	ALOG("file name: %s, lua: %ld\n", szFile, static_cast<long>(lua));
 
 	NLuaLoader::runFile(static_cast<long>(lua), szFile);
 

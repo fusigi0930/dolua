@@ -1,6 +1,8 @@
 package com.embux.dolua;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,9 +12,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
-    JLua mLua;
+public class MainActivity extends AppCompatActivity {
+    public static final String TAG="DoLua-MainWindow";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,18 +27,38 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                try {
+                    Writer writer=new BufferedWriter(
+                            new OutputStreamWriter(new FileOutputStream(
+                                "/sdcard/test.lua"
+                            ), "utf-8"));
+                    writer.write("for i=i,10 do\n");
+                    writer.write("print('test: ', i)\n");
+                    writer.write("end\n");
+                    writer.close();
+
+                    Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);
+                    startServiceIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
+                    startServiceIntent.putExtra(JLua.EXTRA_PARAM, "/sdcard/test.lua");
+
+                    startService(startServiceIntent);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "click exception: " + e.getMessage());
+                }
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                 //       .setAction("Action", null).show();
             }
         });
 
-    // Example of a call to a native method
-    TextView tv = (TextView) findViewById(R.id.sample_text);
-    tv.setText(stringFromJNI());
+        // Example of a call to a native method
+        TextView tv = (TextView) findViewById(R.id.sample_text);
+        tv.setText(stringFromJNI());
+
 
 
     }

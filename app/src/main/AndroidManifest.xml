@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.embux.dolua" >
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,6 +16,17 @@
             android:name=".LuaService"
             android:exported="false">
         </service>
+        <receiver
+            android:name=".LuaReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.embux.dolua.action.RUN_LUA_FILE" />
+                <action android:name="com.embux.dolua.action.RUN_LUA_SCRIPT" />
+                <action android:name="com.embux.dolua.action.STOP_ALL" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
