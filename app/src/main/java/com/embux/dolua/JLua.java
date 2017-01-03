@@ -45,6 +45,10 @@ public class JLua {
 		}.run();
 	}
 
+	public static void nativeSendEvent(String [] arg) {
+		Log.i(TAG, arg[0] + " NO!!!");
+	}
+
 	// native functions
 	private native long initLua();
 	private native void closeLua(long lua);

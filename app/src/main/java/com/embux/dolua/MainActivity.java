@@ -36,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
                             new OutputStreamWriter(new FileOutputStream(
                                 "/sdcard/test.lua"
                             ), "utf-8"));
-                    writer.write("for i=i,10 do\n");
-                    writer.write("print('test: ', i)\n");
+                    writer.write("for i=1,10 do\n");
+                    writer.write("print(\"test: \", i)\n");
                     writer.write("end\n");
+                    writer.write("send_event(\"abc\")");
                     writer.close();
 
                     Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);

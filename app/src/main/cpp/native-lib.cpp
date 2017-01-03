@@ -2,7 +2,10 @@
 #include <string>
 #include "lualoader.h"
 
+JavaVM *g_jvm=NULL;
+
 extern "C" {
+
 JNIEXPORT
 jstring
 Java_com_embux_dolua_MainActivity_stringFromJNI(
@@ -35,6 +38,12 @@ JNIEXPORT void Java_com_embux_dolua_JLua_luaFile(JNIEnv *env, jobject, jlong lua
 	NLuaLoader::runFile(static_cast<long>(lua), szFile);
 
 	env->ReleaseStringUTFChars(str, szFile);
+}
+
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+	g_jvm=vm;
+
+	return JNI_VERSION_1_6;
 }
 
 // end of extern C

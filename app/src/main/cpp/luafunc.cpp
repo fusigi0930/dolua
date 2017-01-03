@@ -26,11 +26,40 @@ int NLuaFunc::luaPrint(lua_State *L) {
 	return 0;
 }
 
-int NLuaFunc::luaSentEvent(lua_State *L) {
+int NLuaFunc::luaSendEvent(lua_State *L) {
 	// argument 0: event type
 	// argument 1: event value
 	// argument 2: event action
 	// argument 3: event duration or repeat times
+
+	if (NULL == g_jvm) {
+		ALOG("jvm is null\n");
+		return 0;
+	}
+
+	JNIEnv *jniEnv=NULL;
+	g_jvm->GetEnv(reinterpret_cast<void**>(&jniEnv), JNI_VERSION_1_6);
+
+	if (NULL == jniEnv) {
+		ALOG("jni env is null\n");
+		return 0;
+	}
+
+	jclass JLua=jniEnv->FindClass("com/embux/dolua/JLua");
+	if (NULL == JLua) {
+		ALOG("JLua class is not found\n");
+		return 0;
+	}
+
+	jmethodID javaSendEvent=jniEnv->GetStaticMethodID(JLua, "nativeSendEvent", "([Ljava/lang/String;)V");
+	if (NULL == javaSendEvent) {
+		ALOG("java nativeSendEvent function is not found\n");
+		return 0;
+	}
+
+	jobjectArray jArray = jniEnv->NewObjectArray(3, jniEnv->FindClass("java/lang/String"), jniEnv->NewStringUTF(__PRETTY_FUNCTION__));
+
+	jniEnv->CallStaticVoidMethod(JLua, javaSendEvent, jArray);
 
 	return 0;
 }

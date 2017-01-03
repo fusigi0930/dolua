@@ -9,6 +9,7 @@
 
 static const struct luaL_Reg override_func[] = {
 		{ "print", NLuaFunc::luaPrint },
+		{ "send_event", NLuaFunc::luaSendEvent },
 
 		{ NULL, NULL }
 };
@@ -81,7 +82,7 @@ void NLuaLoader::runFile(long lua_state, char *file) {
 	}
 
 	if (lua_pcall(lua, 0, LUA_MULTRET, 0)) {
-		ALOG("run luan failed");
+		ALOG("run lua failed");
 		return;
 	}
 }

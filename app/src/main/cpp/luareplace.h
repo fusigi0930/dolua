@@ -9,7 +9,7 @@
 
 namespace NLuaFunc {
 	int luaPrint(lua_State *L);
-	int luaSentEvent(lua_State *L);
+	int luaSendEvent(lua_State *L);
 
 };
 

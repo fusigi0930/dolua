@@ -4,6 +4,7 @@
 
 #ifndef DO_LUA_COMMON_H_H
 #define DO_LUA_COMMON_H_H
+#include <jni.h>
 
 extern "C" {
 #include "lua-5.3.2/src/lua.h"
@@ -15,5 +16,7 @@ extern "C" {
 
 #define LOG_TAG "DoLua-JNI"
 #define ALOG(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+
+extern JavaVM *g_jvm;
 
 #endif //DO_LUA_LUAREPLACE_H_H
