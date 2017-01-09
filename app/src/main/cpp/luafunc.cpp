@@ -37,6 +37,11 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 		return 0;
 	}
 
+	if (NULL == L) {
+		ALOG("lua state is null\n");
+		return 0;
+	}
+
 	JNIEnv *jniEnv=NULL;
 	g_jvm->GetEnv(reinterpret_cast<void**>(&jniEnv), JNI_VERSION_1_6);
 
@@ -57,7 +62,24 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 		return 0;
 	}
 
-	jobjectArray jArray = jniEnv->NewObjectArray(3, jniEnv->FindClass("java/lang/String"), jniEnv->NewStringUTF(__PRETTY_FUNCTION__));
+	lua_gettop(L);
+	std::stringstream s;
+
+	jobjectArray jArray = jniEnv->NewObjectArray(3, jniEnv->FindClass("java/lang/String"), jniEnv->NewStringUTF(""));
+
+	for (int i=0; i<lua_gettop(L); i++) {
+		switch(lua_type(L, i+1)) {
+			default: break;
+			case LUA_TSTRING:
+				jniEnv->SetObjectArrayElement(jArray, i, jniEnv->NewStringUTF(lua_tostring(L, i+1)));
+				break;
+			case LUA_TNUMBER:
+				s.clear();
+				s << lua_tointeger(L, i+1);
+				jniEnv->SetObjectArrayElement(jArray, i, jniEnv->NewStringUTF(s.str().c_str()));
+				break;
+		}
+	}
 
 	jniEnv->CallStaticVoidMethod(JLua, javaSendEvent, jArray);
 
