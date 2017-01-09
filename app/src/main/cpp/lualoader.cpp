@@ -7,9 +7,31 @@
 #include <string>
 #include <sstream>
 
+struct SLuaConst {
+	char *name;
+	int value;
+};
+
 static const struct luaL_Reg override_func[] = {
 		{ "print", NLuaFunc::luaPrint },
 		{ "send_event", NLuaFunc::luaSendEvent },
+
+		{ NULL, NULL }
+};
+
+static const SLuaConst const_data[] = {
+		{ "CONST_EVENT_KEY",		0 },
+		{ "CONST_EVENT_MOUES",		1 },
+		{ "CONST_EVENT_TOUCH", 		2 },
+		{ "CONST_EVENT_CUSTOM",		3 },
+
+		{ "CONST_EVENT_ACTION_DOWN",	0 },
+		{ "CONST_EVENT_ACTION_UP",		1 },
+		{ "CONST_EVENT_ACTION_CLICK",	2 },
+		{ "CONST_EVENT_ACTION_RDOWN",	3 },
+		{ "CONST_EVENT_ACTION_RUP",		4 },
+		{ "CONST_EVENT_ACTION_RCLICK",	5 },
+		{ "CONST_EVENT_ACTION_MOVE",	6 },
 
 		{ NULL, NULL }
 };
@@ -23,6 +45,15 @@ static void registerFunc(lua_State *L) {
 	}
 }
 
+static void registerConst(lua_State *L) {
+	if (NULL == L) return;
+
+	for(int i=0; NULL != const_data[i].name; i++) {
+		lua_pushnumber(L, const_data[i].value);
+		lua_setglobal(L, const_data[i].name);
+	}
+}
+
 long NLuaLoader::initLua() {
 	lua_State *lua=luaL_newstate();
 	if (NULL == lua) {
@@ -30,6 +61,7 @@ long NLuaLoader::initLua() {
 	}
 	luaL_openlibs(lua);
 	registerFunc(lua);
+	registerConst(lua);
 
 	return reinterpret_cast<long>(lua);
 }
