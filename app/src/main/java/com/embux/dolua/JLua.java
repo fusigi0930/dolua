@@ -70,7 +70,7 @@ public class JLua {
 			mJarLoader=new DexClassLoader("/system/framework/input.jar", mDexPath, null, ClassLoader.getSystemClassLoader());
 			mInputClass = mJarLoader.loadClass("com.android.commands.input.Input");
 			mInputObj = (Object) mInputClass.newInstance();
-			mMainFunc = mInputClass.getMethod("main", String[].class);
+			mMainFunc = mInputClass.getMethod("main", new Class<?>[] {String[].class});
 		}
 
 		catch(ClassNotFoundException e) {
@@ -150,10 +150,8 @@ public class JLua {
 
 		try {
 			if (null != mMainFunc) {
-				String[] targ = {
-					"tap", "200", "200",
-				};
-				mMainFunc.invoke(mInputObj, targ);
+
+				mMainFunc.invoke(mInputObj, new Object[] { new String[]{ "tap", "200", "200" }});
 			}
 		}
 		catch(IllegalAccessException e) {
