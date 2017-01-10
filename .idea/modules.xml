@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chimpchat/chimpchat.iml" filepath="$PROJECT_DIR$/chimpchat/chimpchat.iml" />
       <module fileurl="file://$PROJECT_DIR$/do-lua.iml" filepath="$PROJECT_DIR$/do-lua.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jython/jython.iml" filepath="$PROJECT_DIR$/jython/jython.iml" />
-      <module fileurl="file://$PROJECT_DIR$/monkeyrunner/monkeyrunner.iml" filepath="$PROJECT_DIR$/monkeyrunner/monkeyrunner.iml" />
     </modules>
   </component>
 </project>

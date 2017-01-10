@@ -1,8 +1,14 @@
 package com.embux.dolua;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
 
 /**
  * Created by coder on 12/28/16.
@@ -10,6 +16,7 @@ import android.util.Log;
 
 public class LuaService extends IntentService {
 	public static final String TAG="DoLuaService";
+	public static final String DEX_PATH="/data/data/com.embux.dolua";
 
 	private JLua mLua;
 
@@ -17,8 +24,9 @@ public class LuaService extends IntentService {
 		super("LuaService");
 		Log.i(TAG, "Start constructor!");
 		if (null == mLua) {
-			mLua = new JLua();
+			mLua = new JLua(DEX_PATH);
 		}
+
 	}
 
 	@Override

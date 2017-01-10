@@ -18,5 +18,6 @@ extern "C" {
 #define ALOG(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 
 extern JavaVM *g_jvm;
+extern FILE *g_shell;
 
 #endif //DO_LUA_LUAREPLACE_H_H

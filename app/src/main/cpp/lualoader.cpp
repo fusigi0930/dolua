@@ -6,6 +6,9 @@
 #include "luareplace.h"
 #include <string>
 #include <sstream>
+#include <stdio.h>
+
+FILE *g_shell=NULL;
 
 struct SLuaConst {
 	char *name;
@@ -59,6 +62,7 @@ long NLuaLoader::initLua() {
 	if (NULL == lua) {
 		return 0;
 	}
+
 	luaL_openlibs(lua);
 	registerFunc(lua);
 	registerConst(lua);
@@ -72,6 +76,7 @@ void NLuaLoader::closeLua(long lua_state) {
 	if (lua) {
 		lua_close(lua);
 	}
+
 }
 
 void NLuaLoader::runString(long lua_state, char *szLua) {

@@ -4,17 +4,23 @@ package com.embux.dolua;
  * Created by coder on 12/28/16.
  */
 
+import android.app.Instrumentation;
 import android.util.Log;
-import com.android.monkeyrunner.MonkeyDevice;
-import com.android.monkeyrunner.MonkeyRunner;
-import com.android.monkeyrunner.MonkeyImage;
-import com.android.chimpchat.adb.AdbBackend;
 
-import android.view.InputDevice;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.os.SystemClock;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.io.PipedInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import dalvik.system.DexClassLoader;
+
 
 public class JLua {
 	public static final String TAG="JDoLua";
@@ -37,15 +43,48 @@ public class JLua {
 	public static final String CONST_EVENT_ACTION_MOVE = "6";
 
 	private long mLua = 0;
+	private static DexClassLoader mJarLoader;
+	private static Class<?> mInputClass;
+	private static Object mInputObj;
+	private static Method mMainFunc;
+
+	public String mDexPath;
 
 	public JLua() {
 		mLua=0;
+	}
+
+	public JLua(String dexPath) {
+		mDexPath=dexPath;
+		Log.i(TAG, "dex path: " + mDexPath);
+
 		init();
 	}
 
 	public boolean init() {
 		if (0 == mLua)
 			mLua=initLua();
+
+		try {
+			Log.i(TAG, "dex path: " + mDexPath);
+			mJarLoader=new DexClassLoader("/system/framework/input.jar", mDexPath, null, ClassLoader.getSystemClassLoader());
+			mInputClass = mJarLoader.loadClass("com.android.commands.input.Input");
+			mInputObj = (Object) mInputClass.newInstance();
+			mMainFunc = mInputClass.getMethod("main", String[].class);
+		}
+
+		catch(ClassNotFoundException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(InstantiationException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(NoSuchMethodException e) {
+			Log.e(TAG, e.toString());
+		}
 
 		return 0 == mLua ? false : true;
 	}
@@ -109,11 +148,36 @@ public class JLua {
 		// argument 4: event duration or repeat times
 		Log.i(TAG, "send_event touch");
 
-		AdbBackend adb=new AdbBackend();
-		MonkeyDevice device = new MonkeyDevice(adb.waitForConnection());
-		MonkeyImage img=device.takeSnapshot();
-		img.getImpl().writeToFile("/sdcard/1.png", "png");
+		try {
+			if (null != mMainFunc) {
+				String[] targ = {
+					"tap", "200", "200",
+				};
+				mMainFunc.invoke(mInputObj, targ);
+			}
+		}
+		catch(IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(InvocationTargetException e) {
+			Log.e(TAG, e.toString());
+		}
+		/*
+		try {
+			Process p = Runtime.getRuntime().exec("/system/bin/sh");
+			DataOutputStream sout = new DataOutputStream(p.getOutputStream());
+			sout.writeBytes("input tap 200 200\n");
+			sout.flush();
 
+		}
+		catch(IOException e) {
+			Log.e(TAG, e.toString());
+		}
+		/*
+		catch(InterruptedException e) {
+			Log.e(TAG, e.toString());
+		}
+		*/
 	}
 
 	// native functions

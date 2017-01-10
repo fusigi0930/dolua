@@ -1,1 +1,1 @@
-include ':app', ':jython', ':chimpchat', ':monkeyrunner'
+include ':app'
