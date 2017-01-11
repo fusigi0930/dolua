@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 
 import dalvik.system.DexClassLoader;
 
@@ -41,12 +42,19 @@ public class JLua {
 	public static final String CONST_EVENT_ACTION_RUP = "4";
 	public static final String CONST_EVENT_ACTION_RCLICK = "5";
 	public static final String CONST_EVENT_ACTION_MOVE = "6";
+	public static final String CONST_EVENT_ACTION_TOUCH = "7";
+	public static final String CONST_EVENT_ACTION_SWIPE = "8";
 
 	private long mLua = 0;
-	private static DexClassLoader mJarLoader;
-	private static Class<?> mInputClass;
-	private static Object mInputObj;
-	private static Method mMainFunc;
+
+	private static DexClassLoader mJarLoader = null;
+	private static Class<?> mInputClass = null;
+	private static Object mInputObj = null;
+	private static Method mMainFunc = null;
+
+	private static final String LIB_INPUT = "/system/framework/input.jar";
+	private static final String CLASS_INPUT = "com.android.commands.input.Input";
+	private static final String MAIN_INPUT = "main";
 
 	public String mDexPath;
 
@@ -67,10 +75,10 @@ public class JLua {
 
 		try {
 			Log.i(TAG, "dex path: " + mDexPath);
-			mJarLoader=new DexClassLoader("/system/framework/input.jar", mDexPath, null, ClassLoader.getSystemClassLoader());
-			mInputClass = mJarLoader.loadClass("com.android.commands.input.Input");
-			mInputObj = (Object) mInputClass.newInstance();
-			mMainFunc = mInputClass.getMethod("main", new Class<?>[] {String[].class});
+				mJarLoader=new DexClassLoader(LIB_INPUT, mDexPath, null, ClassLoader.getSystemClassLoader());
+				mInputClass = mJarLoader.loadClass(CLASS_INPUT);
+				mInputObj = (Object) mInputClass.newInstance();
+				mMainFunc = mInputClass.getMethod(MAIN_INPUT, new Class<?>[] {String[].class});
 		}
 
 		catch(ClassNotFoundException e) {
@@ -146,20 +154,63 @@ public class JLua {
 		// argument 2: event y
 		// argument 3: event action
 		// argument 4: event duration or repeat times
-		Log.i(TAG, "send_event touch");
+		// or argument 4: x2, argument 5: y2, argument 6: duration
+		Log.i(TAG, "send_event touch argument count: " + arg.length + " content: " + Arrays.toString(arg));
 
-		try {
-			if (null != mMainFunc) {
+		Object[] sendObj=new Object[1];
 
-				mMainFunc.invoke(mInputObj, new Object[] { new String[]{ "tap", "200", "200" }});
-			}
+		switch(arg[3]) {
+			case CONST_EVENT_ACTION_CLICK:
+			case CONST_EVENT_ACTION_TOUCH:
+				if (arg.length != 5) break;
+
+				sendObj[0] = new String[] {
+					"tap", arg[1], arg[2]
+				};
+
+				try {
+					if (mMainFunc != null) {
+						for (int i=0; i < Integer.valueOf(arg[4]); i++) {
+							mMainFunc.invoke(mInputObj, sendObj);
+							Thread.sleep(150, 0);
+						}
+					}
+				}
+				catch(IllegalAccessException e) {
+					Log.e(TAG, e.toString());
+				}
+				catch(InvocationTargetException e) {
+					Log.e(TAG, e.toString());
+				}
+				catch(InterruptedException e) {
+					Log.e(TAG, e.toString());
+				}
+				break;
+			case CONST_EVENT_ACTION_SWIPE:
+			case CONST_EVENT_ACTION_MOVE:
+				if (arg.length != 7) break;
+
+				sendObj[0] = new String[] {
+						"swipe", arg[1], arg[2], arg[4], arg[5], arg[6]
+				};
+
+				try {
+					if (mMainFunc != null) {
+						mMainFunc.invoke(mInputObj, sendObj);
+					}
+				}
+				catch(IllegalAccessException e) {
+					Log.e(TAG, e.toString());
+				}
+				catch(InvocationTargetException e) {
+					Log.e(TAG, e.toString());
+				}
+				break;
+			default:
+				Log.e(TAG, "no!!");
+				return;
 		}
-		catch(IllegalAccessException e) {
-			Log.e(TAG, e.toString());
-		}
-		catch(InvocationTargetException e) {
-			Log.e(TAG, e.toString());
-		}
+
 		/*
 		try {
 			Process p = Runtime.getRuntime().exec("/system/bin/sh");

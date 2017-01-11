@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
                     writer.write("for i=1,10 do\n");
                     writer.write("print(\"test: \", i)\n");
                     writer.write("end\n");
-                    writer.write("send_event(CONST_EVENT_TOUCH)\n");
+                    writer.write("send_event(CONST_EVENT_TOUCH, 200, 500, CONST_EVENT_ACTION_TOUCH, 3)\n");
+                    writer.write("send_event(CONST_EVENT_TOUCH, 100, 200, CONST_EVENT_ACTION_SWIPE, 500, 600, 2000)\n");
                     writer.close();
 
                     Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);

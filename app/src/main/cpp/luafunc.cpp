@@ -65,7 +65,7 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 	lua_gettop(L);
 	std::stringstream s;
 
-	jobjectArray jArray = jniEnv->NewObjectArray(3, jniEnv->FindClass("java/lang/String"), jniEnv->NewStringUTF(""));
+	jobjectArray jArray = jniEnv->NewObjectArray(lua_gettop(L), jniEnv->FindClass("java/lang/String"), jniEnv->NewStringUTF(""));
 
 	for (int i=0; i<lua_gettop(L); i++) {
 		switch(lua_type(L, i+1)) {
@@ -74,7 +74,7 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 				jniEnv->SetObjectArrayElement(jArray, i, jniEnv->NewStringUTF(lua_tostring(L, i+1)));
 				break;
 			case LUA_TNUMBER:
-				s.clear();
+				s.str("");
 				s << lua_tointeger(L, i+1);
 				jniEnv->SetObjectArrayElement(jArray, i, jniEnv->NewStringUTF(s.str().c_str()));
 				break;

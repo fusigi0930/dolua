@@ -35,6 +35,8 @@ static const SLuaConst const_data[] = {
 		{ "CONST_EVENT_ACTION_RUP",		4 },
 		{ "CONST_EVENT_ACTION_RCLICK",	5 },
 		{ "CONST_EVENT_ACTION_MOVE",	6 },
+		{ "CONST_EVENT_ACTION_TOUCH",	7 },
+		{ "CONST_EVENT_ACTION_SWIPE",	8 },
 
 		{ NULL, NULL }
 };
