@@ -13,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
@@ -27,6 +29,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        try {
+            File f = new File(LuaService.DEX_PATH);
+            Process p = Runtime.getRuntime().exec(new String[]{"strace"}, new String[] {"PATH=/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin"}, f);
+        }
+        catch(IOException e) {
+            Log.e(TAG, e.toString());
+            Log.e(TAG, e.getMessage());
+        }
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,8 +50,11 @@ public class MainActivity extends AppCompatActivity {
                     writer.write("for i=1,10 do\n");
                     writer.write("print(\"test: \", i)\n");
                     writer.write("end\n");
+                    writer.write("wait(3000)\n");
                     writer.write("send_event(CONST_EVENT_TOUCH, 200, 500, CONST_EVENT_ACTION_TOUCH, 3)\n");
                     writer.write("send_event(CONST_EVENT_TOUCH, 100, 200, CONST_EVENT_ACTION_SWIPE, 500, 600, 2000)\n");
+                    writer.write("wait(3000)\n");
+                    writer.write("send_event(CONST_EVENT_KEY, CONST_KEYCODE_HOME, CONST_EVENT_ACTION_PRESS, 3)\n");
                     writer.close();
 
                     Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);

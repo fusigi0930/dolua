@@ -10,7 +10,7 @@
 namespace NLuaFunc {
 	int luaPrint(lua_State *L);
 	int luaSendEvent(lua_State *L);
-
+	int luaSleep(lua_State *L);
 };
 
 #endif //DO_LUA_LUAREPLACE_H_H

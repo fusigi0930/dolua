@@ -4,6 +4,7 @@
 
 #include "luareplace.h"
 #include <sstream>
+#include <unistd.h>
 
 int NLuaFunc::luaPrint(lua_State *L) {
 	std::stringstream s;
@@ -82,6 +83,17 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 	}
 
 	jniEnv->CallStaticVoidMethod(JLua, javaSendEvent, jArray);
+
+	return 0;
+}
+
+int NLuaFunc::luaSleep(lua_State *L) {
+	if (NULL == L) return 0;
+
+	lua_gettop(L);
+	int nmSleep=lua_tointeger(L, -1);
+
+	usleep(nmSleep * 1000);
 
 	return 0;
 }

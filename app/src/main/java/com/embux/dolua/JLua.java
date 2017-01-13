@@ -44,6 +44,8 @@ public class JLua {
 	public static final String CONST_EVENT_ACTION_MOVE = "6";
 	public static final String CONST_EVENT_ACTION_TOUCH = "7";
 	public static final String CONST_EVENT_ACTION_SWIPE = "8";
+	public static final String CONST_EVENT_ACTION_PRESS = "9";
+	public static final String CONST_EVENT_ACTION_LPRESS = "10";
 
 	private long mLua = 0;
 
@@ -141,8 +143,43 @@ public class JLua {
 		// argument 1: event value
 		// argument 2: event action
 		// argument 3: event duration or repeat times
+		Log.i(TAG, "send_event key argument count: " + arg.length + " content: " + Arrays.toString(arg));
 
-		Log.i(TAG, "send_event key: " + arg[1]);
+		Object[] sendObj=new Object[1];
+
+		switch(arg[2]) {
+			case CONST_EVENT_ACTION_PRESS:
+				sendObj[0] = new String[] {
+						"keyevent", arg[1]
+				};
+				break;
+			case CONST_EVENT_ACTION_LPRESS:
+				sendObj[0] = new String[] {
+						"keyevent", "--longpress", arg[1]
+				};
+				break;
+			default:
+				Log.e(TAG, "no!!!");
+				return;
+		}
+
+		try {
+			if (mMainFunc != null) {
+				for (int i=0; i < Integer.valueOf(arg[3]); i++) {
+					mMainFunc.invoke(mInputObj, sendObj);
+					Thread.sleep(150, 0);
+				}
+			}
+		}
+		catch(IllegalAccessException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(InvocationTargetException e) {
+			Log.e(TAG, e.toString());
+		}
+		catch(InterruptedException e) {
+			Log.e(TAG, e.toString());
+		}
 	}
 
 	private static void nativeSendMouse(String [] arg) {

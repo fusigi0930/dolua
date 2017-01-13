@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.embux.dolua" >
+    package="com.embux.dolua"
+    android:sharedUserId="android.uid.system"
+    >
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
-    <!--<uses-permission android:name="android.permission.INJECT_EVENTS" />-->
+    <uses-permission android:name="android.permission.INJECT_EVENTS" />
 
     <application
         android:allowBackup="true"
