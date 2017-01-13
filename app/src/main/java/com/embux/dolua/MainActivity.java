@@ -29,15 +29,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        try {
-            File f = new File(LuaService.DEX_PATH);
-            Process p = Runtime.getRuntime().exec(new String[]{"strace"}, new String[] {"PATH=/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin"}, f);
-        }
-        catch(IOException e) {
-            Log.e(TAG, e.toString());
-            Log.e(TAG, e.getMessage());
-        }
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
