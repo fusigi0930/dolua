@@ -21,6 +21,21 @@ android {
             abiFilters 'armeabi','armeabi-v7a'
         }
 
+        signingConfigs {
+            release {
+                storeFile file("../../../android-app/keystore/embux-system.jks")
+                storePassword 'embux@123'
+                keyAlias 'embux'
+                keyPassword 'embux@123'
+            }
+            debug {
+                storeFile file("../../../android-app/keystore/embux-system.jks")
+                storePassword 'embux@123'
+                keyAlias 'embux'
+                keyPassword 'embux@123'
+            }
+        }
+
     }
 
 	buildTypes {
@@ -48,4 +63,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
     testCompile 'junit:junit:4.12'
+    compile project(':openCVLibrary24132')
 }

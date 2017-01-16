@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
@@ -101,5 +102,13 @@ public class MainActivity extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
+
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "opencv not loaded");
+        }
+        else {
+            Log.d(TAG, "load opencv success!!");
+        }
+
     }
 }
