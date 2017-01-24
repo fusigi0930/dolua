@@ -1,7 +1,12 @@
 package com.embux.dolua;
 
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +27,23 @@ import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
+
+    private FloatingControlService m_fcService = null;
+
+    private ServiceConnection m_servConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            if (FloatingControlService.class.getName().equals(name.getClassName())) {
+                FloatingControlService.FCBinder fcBinder = (FloatingControlService.FCBinder) service;
+                m_fcService = fcBinder.getService();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            m_servConn = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +89,18 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
 
+        // init floating control service
+        Log.i(TAG, "start floating control service");
+        Intent i = new Intent(MainActivity.this, FloatingControlService.class);
+        startService(i);
+        bindService(i, m_servConn, Context.BIND_AUTO_CREATE);
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(m_servConn);
     }
 
     @Override
