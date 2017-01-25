@@ -29,6 +29,8 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 	private float m_offsetY;
 	private boolean m_buttonMoving = false;
 
+	public String m_szLuaFile;
+
 	public class FCBinder extends Binder {
 		public FloatingControlService getService() {
 			return FloatingControlService.this;
@@ -117,10 +119,10 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 					Log.i(TAG, "stop moving");
 				}
 				else {
-					Log.i(TAG, "running lua script");
+					Log.i(TAG, "running lua script: " + m_szLuaFile);
 					Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);
 					startServiceIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
-					startServiceIntent.putExtra(JLua.EXTRA_PARAM, "/sdcard/test.lua");
+					startServiceIntent.putExtra(JLua.EXTRA_PARAM, m_szLuaFile);
 
 					startService(startServiceIntent);
 				}

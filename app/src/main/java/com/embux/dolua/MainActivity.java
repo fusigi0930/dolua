@@ -5,8 +5,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
 
     private FloatingControlService m_fcService = null;
+
+    private static final int SELECT_LUA_RESULT = 2001;
 
     private ServiceConnection m_servConn = new ServiceConnection() {
         @Override
@@ -71,15 +77,29 @@ public class MainActivity extends AppCompatActivity {
                     writer.write("send_event(CONST_EVENT_KEY, CONST_KEYCODE_HOME, CONST_EVENT_ACTION_PRESS, 3)\n");
                     writer.close();
 
+                    /*
                     Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);
                     startServiceIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
                     startServiceIntent.putExtra(JLua.EXTRA_PARAM, "/sdcard/test.lua");
 
                     startService(startServiceIntent);
+                    */
                 }
                 catch (Exception e) {
                     Log.e(TAG, "click exception: " + e.getMessage());
                 }
+
+                try {
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.setType("*/*");
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(i, SELECT_LUA_RESULT);
+
+                }
+                catch (android.content.ActivityNotFoundException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                  //       .setAction("Action", null).show();
             }
@@ -123,6 +143,46 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int resultCode, int requestCode, Intent data) {
+        Log.i(TAG, "onActivityResult: " + resultCode + ", " + requestCode);
+        switch (resultCode) {
+            default: break;
+
+            case SELECT_LUA_RESULT:
+                Uri uri = data.getData();
+
+                Log.i(TAG, "data: " + uri.toString());
+                if (m_fcService != null) {
+                    m_fcService.m_szLuaFile = getPathFromUri(uri);
+                }
+                break;
+        }
+    }
+
+    public String getPathFromUri(Uri uri) {
+        if ("com.android.externalstorage.documents".equals(uri.getAuthority())) {
+            final String docid=DocumentsContract.getDocumentId(uri);
+            Log.i(TAG, "docid: " + docid);
+
+            final String[] split = docid.split(":");
+            final String type = split[0];
+
+            if ("primary".equalsIgnoreCase(type)) {
+                Log.i(TAG, Environment.getExternalStorageDirectory().getAbsolutePath());
+                return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + split[1];
+            }
+            else if (Environment.isExternalStorageRemovable()) {
+                return System.getenv("EXTERNAL_STORAGE") + "/" + split[1];
+            }
+            else {
+                return "/storage/" + type + "/" + split[1];
+            }
+        }
+
+        return "";
     }
 
     /**
