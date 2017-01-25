@@ -5,6 +5,8 @@ package com.embux.dolua;
  */
 
 import android.app.Instrumentation;
+import android.os.Handler;
+import android.renderscript.ScriptGroup;
 import android.util.Log;
 
 
@@ -19,6 +21,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import dalvik.system.DexClassLoader;
 
@@ -100,6 +105,7 @@ public class JLua {
 	}
 
 	public void close() {
+		Log.i(TAG, "close lua");
 		closeLua(mLua);
 	}
 
@@ -109,12 +115,11 @@ public class JLua {
 
 	public void runFile(String str) {
 		final String szFile=str;
-		new Runnable() {
-			public void run() {
-				Log.i(TAG, "runFile: " + szFile);
-				luaFile(mLua, szFile);
-			}
-		}.run();
+
+		Log.i(TAG, "runFile: " + szFile);
+		luaFile(mLua, szFile);
+		Log.i(TAG, "finished run file: " + szFile);
+
 	}
 
 	public static void nativeSendEvent(String [] arg) {

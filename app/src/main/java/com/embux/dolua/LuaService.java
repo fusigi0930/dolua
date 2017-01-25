@@ -9,6 +9,9 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by coder on 12/28/16.
@@ -51,6 +54,7 @@ public class LuaService extends IntentService {
 
 			if (null != mLua) {
 				mLua.runFile(param);
+				sendBroadcast(new Intent(FloatingControlService.FINISH_RUN_PROCEDURE));
 			}
 		}
 		else if (JLua.ACTION_RUN_LUA_SCRIPT.equals(action)) {
@@ -62,7 +66,7 @@ public class LuaService extends IntentService {
 			}
 		}
 		else if (JLua.ACTION_STOP_ALL.equals(action)) {
-
+			Log.i(TAG, "stop all");
 		}
 	}
 }

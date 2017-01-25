@@ -1,8 +1,11 @@
 package com.embux.dolua;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Binder;
@@ -13,6 +16,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.util.Log;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by coder on 1/23/17.
@@ -28,8 +34,13 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 	private float m_offsetX;
 	private float m_offsetY;
 	private boolean m_buttonMoving = false;
+	private boolean m_bIsScriptRunning = false;
+
+	private Intent m_luaIntent = null;
 
 	public String m_szLuaFile;
+
+	public static final String FINISH_RUN_PROCEDURE = "com.embux.dolua.action.FCServiceFinishRunningProcedure";
 
 	public class FCBinder extends Binder {
 		public FloatingControlService getService() {
@@ -61,6 +72,18 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 		layoutParam.x = m_buttonX;
 		layoutParam.y = m_buttonY;
 		m_wm.addView(m_overlayButton, layoutParam);
+
+		IntentFilter ifilter = new IntentFilter(FINISH_RUN_PROCEDURE);
+		registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.i(TAG, "FCService receive: " + intent.getAction());
+				if (FINISH_RUN_PROCEDURE.equals(intent.getAction())) {
+					m_bIsScriptRunning = false;
+					m_overlayButton.setImageResource(android.R.drawable.ic_media_play);
+				}
+			}
+		}, ifilter);
 	}
 
 	@Override
@@ -120,11 +143,22 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 				}
 				else {
 					Log.i(TAG, "running lua script: " + m_szLuaFile);
-					Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);
-					startServiceIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
-					startServiceIntent.putExtra(JLua.EXTRA_PARAM, m_szLuaFile);
+					if (!m_bIsScriptRunning) {
+						m_luaIntent = new Intent(getApplicationContext(), LuaService.class);
+						m_luaIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
+						m_luaIntent.putExtra(JLua.EXTRA_PARAM, m_szLuaFile);
 
-					startService(startServiceIntent);
+						startService(m_luaIntent);
+						m_overlayButton.setImageResource(android.R.drawable.ic_media_pause);
+						m_bIsScriptRunning = true;
+					}
+					else {
+						m_bIsScriptRunning = false;
+						Log.i(TAG, "stop lua service");
+						stopService(m_luaIntent);
+
+						m_overlayButton.setImageResource(android.R.drawable.ic_media_play);
+					}
 				}
 				m_buttonMoving = false;
 			}	break;

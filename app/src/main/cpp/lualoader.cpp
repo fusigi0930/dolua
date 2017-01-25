@@ -353,6 +353,7 @@ void NLuaLoader::closeLua(long lua_state) {
 	lua_State *lua=reinterpret_cast<lua_State*>(lua_state);
 
 	if (lua) {
+		ALOG("close lua");
 		lua_close(lua);
 	}
 
@@ -397,8 +398,10 @@ void NLuaLoader::runFile(long lua_state, char *file) {
 		return;
 	}
 
+	ALOG("running lua");
 	if (lua_pcall(lua, 0, LUA_MULTRET, 0)) {
 		ALOG("run lua failed");
 		return;
 	}
+	ALOG("finish lua");
 }

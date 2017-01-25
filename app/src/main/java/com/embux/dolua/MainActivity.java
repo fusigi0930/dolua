@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private FloatingControlService m_fcService = null;
 
     private static final int SELECT_LUA_RESULT = 2001;
+    private boolean m_bIsFCServiceStarted = false;
+    private String m_szLuaFile;
 
     private ServiceConnection m_servConn = new ServiceConnection() {
         @Override
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
             if (FloatingControlService.class.getName().equals(name.getClassName())) {
                 FloatingControlService.FCBinder fcBinder = (FloatingControlService.FCBinder) service;
                 m_fcService = fcBinder.getService();
+                m_fcService.m_szLuaFile = m_szLuaFile;
             }
         }
 
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 try {
                     Writer writer=new BufferedWriter(
                             new OutputStreamWriter(new FileOutputStream(
@@ -77,18 +81,16 @@ public class MainActivity extends AppCompatActivity {
                     writer.write("send_event(CONST_EVENT_KEY, CONST_KEYCODE_HOME, CONST_EVENT_ACTION_PRESS, 3)\n");
                     writer.close();
 
-                    /*
                     Intent startServiceIntent=new Intent(getApplicationContext(), LuaService.class);
                     startServiceIntent.setAction(JLua.ACTION_RUN_LUA_FILE);
                     startServiceIntent.putExtra(JLua.EXTRA_PARAM, "/sdcard/test.lua");
 
                     startService(startServiceIntent);
-                    */
                 }
                 catch (Exception e) {
                     Log.e(TAG, "click exception: " + e.getMessage());
                 }
-
+                */
                 try {
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                     i.setType("*/*");
@@ -103,17 +105,52 @@ public class MainActivity extends AppCompatActivity {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                  //       .setAction("Action", null).show();
             }
+
+        });
+
+        fab.setEnabled(m_bIsFCServiceStarted);
+
+        FloatingActionButton ctrlservice = (FloatingActionButton) findViewById(R.id.ctrlservice);
+        ctrlservice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FloatingActionButton ctrlservice = (FloatingActionButton) findViewById(R.id.ctrlservice);
+                if (m_bIsFCServiceStarted) {
+                    // init floating control service
+                    Log.i(TAG, "stop floating control service");
+                    ctrlservice.setImageResource(android.R.drawable.presence_online);
+                    Intent i = new Intent(MainActivity.this, FloatingControlService.class);
+                    unbindService(m_servConn);
+                    stopService(i);
+                    m_bIsFCServiceStarted=false;
+                    m_fcService = null;
+
+                }
+                else {
+                    // init floating control service
+                    Log.i(TAG, "start floating control service");
+                    ctrlservice.setImageResource(android.R.drawable.presence_offline);
+
+                    Intent i = new Intent(MainActivity.this, FloatingControlService.class);
+                    startService(i);
+                    bindService(i, m_servConn, Context.BIND_AUTO_CREATE);
+                    m_bIsFCServiceStarted=true;
+
+                    if (m_fcService != null) {
+                        Log.i(TAG, "set service lua file path");
+                        m_fcService.m_szLuaFile = m_szLuaFile;
+                    }
+                    else Log.i(TAG, "service reference is null");
+                }
+
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                fab.setEnabled(m_bIsFCServiceStarted);
+            }
         });
 
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
-
-        // init floating control service
-        Log.i(TAG, "start floating control service");
-        Intent i = new Intent(MainActivity.this, FloatingControlService.class);
-        startService(i);
-        bindService(i, m_servConn, Context.BIND_AUTO_CREATE);
 
     }
 
@@ -155,8 +192,9 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = data.getData();
 
                 Log.i(TAG, "data: " + uri.toString());
+                m_szLuaFile=getPathFromUri(uri);
                 if (m_fcService != null) {
-                    m_fcService.m_szLuaFile = getPathFromUri(uri);
+                    m_fcService.m_szLuaFile = m_szLuaFile;
                 }
                 break;
         }
