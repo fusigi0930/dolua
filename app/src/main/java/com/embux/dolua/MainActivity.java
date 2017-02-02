@@ -1,11 +1,10 @@
 package com.embux.dolua;
 
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,20 +13,20 @@ import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import org.opencv.android.OpenCVLoader;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
@@ -37,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int SELECT_LUA_RESULT = 2001;
     private boolean m_bIsFCServiceStarted = false;
     private String m_szLuaFile;
+
+    public static final String DOLUA_CURRENT_SCRIPT = "dolua_current_script_file";
+    public static final String DOLUA_PREFERENCE = "dolua_based_preference";
+
+    SharedPreferences m_pref = null;
 
     private ServiceConnection m_servConn = new ServiceConnection() {
         @Override
@@ -148,9 +152,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        if (m_pref == null) {
+            m_pref = getSharedPreferences(DOLUA_PREFERENCE, Context.MODE_PRIVATE);
+        }
+
+        m_szLuaFile = m_pref.getString(DOLUA_CURRENT_SCRIPT, "");
+        Log.i(TAG, "get current lua file: " + m_szLuaFile);
+
+        updateFileInfo();
+
+    }
+
+    private void updateFileInfo() {
+        TextView filename = (TextView) findViewById(R.id.txtViewFileName);
+        TextView filecontent = (TextView) findViewById(R.id.txtViewFileContent);
+
+        filename.setText(m_szLuaFile);
+        String szBuffer=null;
+
+        if (!m_szLuaFile.isEmpty()) {
+            try {
+                FileInputStream filein = new FileInputStream(m_szLuaFile);
+                InputStreamReader reader = new InputStreamReader(filein);
+                BufferedReader bufferReader = new BufferedReader(reader);
+                StringBuilder content = new StringBuilder();
+
+                while ((szBuffer = bufferReader.readLine()) != null) {
+                    content.append(szBuffer + "\n");
+                }
+                filein.close();
+                szBuffer = content.toString();
+            }
+            catch (FileNotFoundException e) {
+                Log.e(TAG, "file: " + m_szLuaFile + " is not found");
+            }
+            catch (IOException e) {
+                Log.e(TAG, "read file: " + m_szLuaFile + " error");
+            }
+
+            filecontent.setText(szBuffer);
+        }
 
     }
 
@@ -196,6 +237,15 @@ public class MainActivity extends AppCompatActivity {
                 if (m_fcService != null) {
                     m_fcService.m_szLuaFile = m_szLuaFile;
                 }
+
+                if (m_pref != null) {
+                    SharedPreferences.Editor editor = m_pref.edit();
+                    editor.putString(DOLUA_CURRENT_SCRIPT, m_szLuaFile);
+                    editor.commit();
+                }
+
+                updateFileInfo();
+
                 break;
         }
     }
