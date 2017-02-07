@@ -3,9 +3,11 @@ package com.embux.dolua;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Binder;
@@ -49,6 +51,23 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 	}
 
 	private FCBinder m_binder = new FCBinder();
+
+	private LuaService m_currentLuaService = null;
+
+	private ServiceConnection m_servConn = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			if (LuaService.class.getName().equals(name.getClassName())) {
+				LuaService.LSBinder lsBinder = (LuaService.LSBinder) service;
+				m_currentLuaService = lsBinder.getService();
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			m_servConn = null;
+		}
+	};
 
 	@Override
 	public void onCreate() {
@@ -101,6 +120,7 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 			m_wm.removeView(m_overlayButton);
 			m_overlayButton = null;
 		}
+		unbindService(m_servConn);
 	}
 
 	@Override
@@ -149,13 +169,16 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 						m_luaIntent.putExtra(JLua.EXTRA_PARAM, m_szLuaFile);
 
 						startService(m_luaIntent);
+						bindService(m_luaIntent, m_servConn, Context.BIND_AUTO_CREATE);
 						m_overlayButton.setImageResource(android.R.drawable.ic_media_pause);
 						m_bIsScriptRunning = true;
 					}
 					else {
 						m_bIsScriptRunning = false;
-						Log.i(TAG, "stop lua service");
-						stopService(m_luaIntent);
+						if (m_currentLuaService != null) {
+							m_currentLuaService.setLuaFlag(JLua.CONST_FLAG_EXIT, 1);
+							//m_currentLuaService.closeLua();
+						}
 
 						m_overlayButton.setImageResource(android.R.drawable.ic_media_play);
 					}

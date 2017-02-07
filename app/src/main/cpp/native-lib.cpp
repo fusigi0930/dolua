@@ -40,6 +40,14 @@ JNIEXPORT void Java_com_embux_dolua_JLua_luaFile(JNIEnv *env, jobject, jlong lua
 	env->ReleaseStringUTFChars(str, szFile);
 }
 
+JNIEXPORT void Java_com_embux_dolua_JLua_setLuaFlag(JNIEnv *env, jobject, jlong lua, jint flag, jint value) {
+	NLuaLoader::setFlag(static_cast<long>(lua), static_cast<int>(flag), static_cast<int>(value));
+}
+
+JNIEXPORT void Java_com_embux_dolua_JLua_stopLua(JNIEnv *env, jobject, jlong lua) {
+	NLuaLoader::stopLua(lua);
+}
+
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 	g_jvm=vm;
 

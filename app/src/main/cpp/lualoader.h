@@ -10,6 +10,8 @@
 namespace NLuaLoader {
     long initLua();
     void closeLua(long lua_state);
+	void setFlag(long lua_state, int nFlag, int nValue);
+	void stopLua(long lua_state);
 
 	void runString(long lua_state, char* szLua);
 	void runFile(long lua_state, char* file);

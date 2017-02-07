@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
 
     private FloatingControlService m_fcService = null;
+    private LuaService m_currentLuaService = null;
 
     private static final int SELECT_LUA_RESULT = 2001;
     private boolean m_bIsFCServiceStarted = false;

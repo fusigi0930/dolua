@@ -8,6 +8,9 @@
 #include <sstream>
 #include <stdio.h>
 
+#define VAR_FLAG_EXIT "__var_flag_exit__"
+#define FLAG_EXIT		1001
+
 FILE *g_shell=NULL;
 
 struct SLuaConst {
@@ -336,6 +339,19 @@ static void registerConst(lua_State *L) {
 	}
 }
 
+static void luaHook(lua_State *L, lua_Debug *ar) {
+	if (NULL == L) {
+		return;
+	}
+
+	lua_getglobal(L, VAR_FLAG_EXIT);
+	int nIsExit=lua_tointeger(L, -1);
+
+	if (nIsExit) {
+		luaL_error(L, "force terminate!");
+	}
+}
+
 long NLuaLoader::initLua() {
 	lua_State *lua=luaL_newstate();
 	if (NULL == lua) {
@@ -343,6 +359,8 @@ long NLuaLoader::initLua() {
 	}
 
 	luaL_openlibs(lua);
+	lua_sethook(lua, luaHook, LUA_MASKLINE, 0);
+	setFlag(reinterpret_cast<long>(lua), FLAG_EXIT, 0);
 	registerFunc(lua);
 	registerConst(lua);
 
@@ -364,7 +382,22 @@ void NLuaLoader::runString(long lua_state, char *szLua) {
 	if (NULL == lua) return;
 	if (NULL == szLua) return;
 
+	setFlag(reinterpret_cast<long>(lua), FLAG_EXIT, 0);
 	luaL_dostring(lua, szLua);
+}
+
+void NLuaLoader::setFlag(long lua_state, int nFlag, int nValue) {
+	lua_State *lua=reinterpret_cast<lua_State*>(lua_state);
+	if (NULL == lua) return;
+
+	switch (nFlag) {
+		default:
+			return;
+		case FLAG_EXIT:
+			lua_pushinteger(lua, nValue);
+			lua_setglobal(lua, VAR_FLAG_EXIT);
+			break;
+	}
 }
 
 static void adjustLuaPath(lua_State *L, char *file) {
@@ -392,6 +425,7 @@ void NLuaLoader::runFile(long lua_state, char *file) {
 	if (NULL == file) return;
 
 	adjustLuaPath(lua, file);
+	setFlag(reinterpret_cast<long>(lua), FLAG_EXIT, 0);
 
 	if (luaL_loadfile(lua, file)) {
 		ALOG("load %s failed", file);
@@ -404,4 +438,12 @@ void NLuaLoader::runFile(long lua_state, char *file) {
 		return;
 	}
 	ALOG("finish lua");
+}
+
+void NLuaLoader::stopLua(long lua_state) {
+	lua_State *lua=reinterpret_cast<lua_State*>(lua_state);
+
+	if (NULL == lua) return;
+
+	luaL_error(lua, "force stop!");
 }

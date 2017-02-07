@@ -52,6 +52,8 @@ public class JLua {
 	public static final String CONST_EVENT_ACTION_PRESS = "9";
 	public static final String CONST_EVENT_ACTION_LPRESS = "10";
 
+	public static final int CONST_FLAG_EXIT = 1001;
+
 	private long mLua = 0;
 
 	private static DexClassLoader mJarLoader = null;
@@ -120,6 +122,15 @@ public class JLua {
 		luaFile(mLua, szFile);
 		Log.i(TAG, "finished run file: " + szFile);
 
+	}
+
+	public void setFlag(int flag, int value) {
+		Log.i(TAG, "set flag: " + flag + " value: " + value);
+		setLuaFlag(mLua, flag, value);
+	}
+
+	public void stop() {
+		stopLua(mLua);
 	}
 
 	public static void nativeSendEvent(String [] arg) {
@@ -276,4 +287,6 @@ public class JLua {
 	private native void closeLua(long lua);
 	private native void luaString(long lua, String str);
 	private native void luaFile(long lua, String str);
+	private native void setLuaFlag(long lua, int flag, int value);
+	private native void stopLua(long lua);
 }

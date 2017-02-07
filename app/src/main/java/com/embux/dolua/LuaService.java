@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Binder;
 import android.os.Environment;
+import android.os.IBinder;
 import android.util.Log;
 
 import java.io.File;
@@ -22,6 +24,14 @@ public class LuaService extends IntentService {
 	public static final String DEX_PATH="/data/data/com.embux.dolua";
 
 	private JLua mLua;
+
+	public class LSBinder extends Binder {
+		public LuaService getService() {
+			return LuaService.this;
+		}
+	};
+
+	private LSBinder mBinder = new LSBinder();
 
 	public LuaService() {
 		super("LuaService");
@@ -40,6 +50,11 @@ public class LuaService extends IntentService {
 		}
 
 		super.onDestroy();
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
 	}
 
 	@Override
@@ -68,5 +83,14 @@ public class LuaService extends IntentService {
 		else if (JLua.ACTION_STOP_ALL.equals(action)) {
 			Log.i(TAG, "stop all");
 		}
+	}
+
+	public void setLuaFlag(int flag, int value) {
+		mLua.setFlag(flag, value);
+	}
+
+	public void closeLua() {
+		Log.i(TAG, "close lua");
+		mLua.stop();
 	}
 }
