@@ -1,4 +1,4 @@
-package com.embux.dolua;
+package com.sotaku.dolua;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 
 public class LuaService extends IntentService {
 	public static final String TAG="DoLuaService";
-	public static final String DEX_PATH="/data/data/com.embux.dolua";
+	public static final String DEX_PATH="/data/data/com.sotaku.dolua";
 
 	private JLua mLua;
 

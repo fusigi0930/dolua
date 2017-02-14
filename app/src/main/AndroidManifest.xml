@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.embux.dolua"
+    package="com.sotaku.dolua"
     android:sharedUserId="android.uid.system"
     >
 
@@ -28,9 +28,9 @@
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.embux.dolua.action.RUN_LUA_FILE" />
-                <action android:name="com.embux.dolua.action.RUN_LUA_SCRIPT" />
-                <action android:name="com.embux.dolua.action.STOP_ALL" />
+                <action android:name="com.sotaku.dolua.action.RUN_LUA_FILE" />
+                <action android:name="com.sotaku.dolua.action.RUN_LUA_SCRIPT" />
+                <action android:name="com.sotaku.dolua.action.STOP_ALL" />
             </intent-filter>
         </receiver>
         <activity

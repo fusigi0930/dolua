@@ -1,4 +1,4 @@
-package com.embux.dolua;
+package com.sotaku.dolua;
 
 import android.content.ComponentName;
 import android.content.Context;

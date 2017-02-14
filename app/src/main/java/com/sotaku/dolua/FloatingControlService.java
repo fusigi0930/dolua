@@ -1,4 +1,4 @@
-package com.embux.dolua;
+package com.sotaku.dolua;
 
 import android.app.ActivityManager;
 import android.app.Service;
@@ -42,7 +42,7 @@ public class FloatingControlService extends Service implements View.OnTouchListe
 
 	public String m_szLuaFile;
 
-	public static final String FINISH_RUN_PROCEDURE = "com.embux.dolua.action.FCServiceFinishRunningProcedure";
+	public static final String FINISH_RUN_PROCEDURE = "com.sotaku.dolua.action.FCServiceFinishRunningProcedure";
 
 	public class FCBinder extends Binder {
 		public FloatingControlService getService() {

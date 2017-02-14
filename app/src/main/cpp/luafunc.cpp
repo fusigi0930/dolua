@@ -51,7 +51,7 @@ int NLuaFunc::luaSendEvent(lua_State *L) {
 		return 0;
 	}
 
-	jclass JLua=jniEnv->FindClass("com/embux/dolua/JLua");
+	jclass JLua=jniEnv->FindClass("com/sotaku/dolua/JLua");
 	if (NULL == JLua) {
 		ALOG("JLua class is not found\n");
 		return 0;

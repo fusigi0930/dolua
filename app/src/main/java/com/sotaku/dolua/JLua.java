@@ -1,4 +1,4 @@
-package com.embux.dolua;
+package com.sotaku.dolua;
 
 /**
  * Created by coder on 12/28/16.
@@ -30,9 +30,9 @@ import dalvik.system.DexClassLoader;
 
 public class JLua {
 	public static final String TAG="JDoLua";
-	public static final String ACTION_RUN_LUA_FILE = "com.embux.dolua.action.RUN_LUA_FILE";
-	public static final String ACTION_RUN_LUA_SCRIPT = "com.embux.dolua.action.RUN_LUA_SCRIPT";
-	public static final String ACTION_STOP_ALL = "com.embux.dolua.action.STOP_ALL";
+	public static final String ACTION_RUN_LUA_FILE = "com.sotaku.dolua.action.RUN_LUA_FILE";
+	public static final String ACTION_RUN_LUA_SCRIPT = "com.sotaku.dolua.action.RUN_LUA_SCRIPT";
+	public static final String ACTION_STOP_ALL = "com.sotaku.dolua.action.STOP_ALL";
 	public static final String EXTRA_PARAM = "PARAM";
 
 	public static final String CONST_EVENT_KEY = "0";
