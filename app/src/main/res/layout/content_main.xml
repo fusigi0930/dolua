@@ -18,10 +18,10 @@
         android:id="@+id/txtViewFileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Welcome" />
 
     <TextView
-        android:text="TextView"
+        android:text="Welcome to dolua"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtViewFileName"
