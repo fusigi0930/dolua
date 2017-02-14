@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import java.io.File;
@@ -32,6 +33,7 @@ public class LuaService extends IntentService {
 	};
 
 	private LSBinder mBinder = new LSBinder();
+	private PowerManager.WakeLock mWL = null;
 
 	public LuaService() {
 		super("LuaService");
@@ -40,6 +42,9 @@ public class LuaService extends IntentService {
 			mLua = new JLua(DEX_PATH);
 		}
 
+		PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+		mWL = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+		mWL.acquire();
 	}
 
 	@Override
@@ -47,6 +52,10 @@ public class LuaService extends IntentService {
 		Log.i(TAG, "destroy finish service");
 		if (null != mLua) {
 			mLua.close();
+		}
+
+		if (null != mWL) {
+			mWL.release();
 		}
 
 		super.onDestroy();
