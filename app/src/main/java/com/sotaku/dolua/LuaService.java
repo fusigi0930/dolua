@@ -42,9 +42,6 @@ public class LuaService extends IntentService {
 			mLua = new JLua(DEX_PATH);
 		}
 
-		PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-		mWL = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-		mWL.acquire();
 	}
 
 	@Override
@@ -71,6 +68,10 @@ public class LuaService extends IntentService {
 		Log.i(TAG, "DoLua service action: " + intent.getAction());
 
 		String action=intent.getAction();
+
+		PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+		mWL = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+		mWL.acquire();
 
 		if (JLua.ACTION_RUN_LUA_FILE.equals(action)) {
 			String param=intent.getStringExtra(JLua.EXTRA_PARAM);
