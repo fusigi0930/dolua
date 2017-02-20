@@ -1,15 +1,19 @@
 package com.sotaku.dolua;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.DocumentsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +26,7 @@ import android.view.MenuItem;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -161,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "get current lua file: " + m_szLuaFile);
 
         updateFileInfo();
+        supportPermissions();
+        OpenCVLoader.readFB();
 
     }
 
@@ -272,6 +279,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return "";
+    }
+
+    public boolean supportPermissions() {
+        int permReadStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permWriteStroage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permMediaControl = ContextCompat.checkSelfPermission(this, Manifest.permission.MEDIA_CONTENT_CONTROL);
+        int permWakeLock = ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK);
+
+        if (PackageManager.PERMISSION_DENIED == permReadStorage ||
+                PackageManager.PERMISSION_DENIED == permWriteStroage ||
+                PackageManager.PERMISSION_DENIED == permMediaControl ||
+                PackageManager.PERMISSION_DENIED == permWakeLock) {
+            // init permissions dialog
+            int requestCode=0;
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+                                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                                    Manifest.permission.MEDIA_CONTENT_CONTROL,
+                                                                    Manifest.permission.WAKE_LOCK}, requestCode);
+
+        }
+
+        return true;
     }
 
     /**
