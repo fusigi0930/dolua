@@ -77,10 +77,6 @@ public class LuaService extends IntentService {
 			String param=intent.getStringExtra(JLua.EXTRA_PARAM);
 			Log.i(TAG, "filename: " + param);
 
-			if (null != mLua) {
-				mLua.runFile(param);
-				sendBroadcast(new Intent(FloatingControlService.FINISH_RUN_PROCEDURE));
-			}
 		}
 		else if (JLua.ACTION_RUN_LUA_SCRIPT.equals(action)) {
 			String param=intent.getStringExtra(JLua.EXTRA_PARAM);
@@ -92,6 +88,11 @@ public class LuaService extends IntentService {
 		}
 		else if (JLua.ACTION_STOP_ALL.equals(action)) {
 			Log.i(TAG, "stop all");
+		}
+
+		if (null != mLua) {
+			mLua.runFile(intent.getStringExtra(JLua.EXTRA_PARAM));
+			sendBroadcast(new Intent(FloatingControlService.FINISH_RUN_PROCEDURE));
 		}
 	}
 
