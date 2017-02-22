@@ -16,6 +16,46 @@ find_library( # Sets the name of the path variable.
 			# you want CMake to locate.
 			log )
 
+include_directories(
+			${CMAKE_CURRENT_SOURCE_DIR}/../openCVLibrary24132/inc
+)
+
+add_library(
+			cv-core
+			STATIC
+			IMPORTED
+)
+
+set_target_properties(
+			cv-core
+			PROPERTIES
+			IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../openCVLibrary24132/src/main/jniLibs/${ANDROID_ABI}/libopencv_core.a
+)
+
+add_library(
+			cv-imgproc
+			STATIC
+			IMPORTED
+)
+
+set_target_properties(
+			cv-imgproc
+			PROPERTIES
+			IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../openCVLibrary24132/src/main/jniLibs/${ANDROID_ABI}/libopencv_imgproc.a
+)
+
+add_library(
+			cv-highgui
+			STATIC
+			IMPORTED
+)
+
+set_target_properties(
+			cv-highgui
+			PROPERTIES
+			IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../openCVLibrary24132/src/main/jniLibs/${ANDROID_ABI}/libopencv_highgui.a
+)
+
 add_library( # Sets the name of the library.
 			native-lib
 
@@ -28,6 +68,7 @@ add_library( # Sets the name of the library.
 			src/main/cpp/native-lib.cpp
 			src/main/cpp/lualoader.cpp
 			src/main/cpp/luafunc.cpp
+			src/main/cpp/copencv.cpp
 )
 
 add_dependencies(
@@ -43,6 +84,9 @@ target_link_libraries( # Specifies the target library.
 			# included in the NDK.
 			lua
 			${log-lib}
+			cv-core
+			cv-imgproc
+			cv-highgui
 )
 
 

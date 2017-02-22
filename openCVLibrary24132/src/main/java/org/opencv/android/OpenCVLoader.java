@@ -3,6 +3,13 @@ package org.opencv.android;
 import android.content.Context;
 import android.util.Log;
 
+import org.opencv.core.Mat;
+
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * Helper class provides common initialization methods for OpenCV library.
  */
@@ -105,5 +112,25 @@ public class OpenCVLoader
         }
         Log.w(TAG, "OpenCV binaries are not packaged with application. Trying to use OpenCV Manager...");
         return AsyncServiceHelper.initOpenCV(Version, AppContext, Callback);
+    }
+
+    public static Mat readFB() {
+        Mat mat = new Mat();
+        try {
+            FileInputStream fb = new FileInputStream("/dev/graphics/fb0");
+            DataInputStream datain = new DataInputStream(fb);
+            Log.i(TAG, "read fb0");
+            //
+            datain.close();
+        }
+        catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+
+        return mat;
     }
 }
