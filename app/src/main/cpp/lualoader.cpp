@@ -6,7 +6,7 @@
 #include "luareplace.h"
 #include <string>
 #include <sstream>
-#include <stdio.h>
+#include "copencv.h"
 
 #define VAR_FLAG_EXIT "__var_flag_exit__"
 #define FLAG_EXIT		1001
@@ -363,6 +363,8 @@ long NLuaLoader::initLua() {
 	setFlag(reinterpret_cast<long>(lua), FLAG_EXIT, 0);
 	registerFunc(lua);
 	registerConst(lua);
+
+	Luna<COpenCV>::Register(lua);
 
 	return reinterpret_cast<long>(lua);
 }
