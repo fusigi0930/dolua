@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.opengl.GLES20;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -27,11 +29,14 @@ import org.opencv.android.OpenCVLoader;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.IntBuffer;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG="DoLua-MainWindow";
@@ -155,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
                 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
                 fab.setEnabled(m_bIsFCServiceStarted);
+                Bitmap bmp = getScreen(40, 200, 100, 100);
             }
         });
 
@@ -167,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateFileInfo();
         supportPermissions();
-        OpenCVLoader.readFB();
+
 
     }
 
@@ -301,6 +307,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public Bitmap getScreen(int x, int y, int width, int height) {
+        Bitmap bmp;
+        int[] ar_bmp = new int[width * height];
+        int[] ar_fullbmp = new int[width * (y + height)];
+        IntBuffer intBuffer = IntBuffer.wrap(ar_bmp);
+        intBuffer.position(0);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, intBuffer);
+        bmp = Bitmap.createBitmap(ar_bmp, width, height, Bitmap.Config.ARGB_8888);
+
+        // save to jpg test
+        File file = new File("/sdcard/test.jpg");
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            FileOutputStream o = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 90, o);
+            o.flush();
+            o.close();
+        }
+        catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        //
+        return bmp;
     }
 
     /**
