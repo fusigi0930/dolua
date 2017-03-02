@@ -321,13 +321,10 @@ public class MainActivity extends AppCompatActivity {
 
     public Bitmap getScreen(int x, int y, int width, int height) {
         Bitmap bmp;
-        int[] ar_bmp = new int[width * height];
-        int[] ar_fullbmp = new int[width * (y + height)];
-        IntBuffer intBuffer = IntBuffer.wrap(ar_bmp);
-        intBuffer.position(0);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, intBuffer);
-        bmp = Bitmap.createBitmap(ar_bmp, width, height, Bitmap.Config.ARGB_8888);
+        View v = getWindow().getDecorView().getRootView();
+        v.setDrawingCacheEnabled(true);
+        bmp = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
 
         // save to jpg test
         File file = new File("/sdcard/test.jpg");
