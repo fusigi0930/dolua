@@ -292,17 +292,27 @@ public class MainActivity extends AppCompatActivity {
         int permWriteStroage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int permMediaControl = ContextCompat.checkSelfPermission(this, Manifest.permission.MEDIA_CONTENT_CONTROL);
         int permWakeLock = ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK);
+        int permSystemAlert = ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW);
+        int permBattery = ContextCompat.checkSelfPermission(this, Manifest.permission.BATTERY_STATS);
+        int permFlash = ContextCompat.checkSelfPermission(this, Manifest.permission.FLASHLIGHT);
 
         if (PackageManager.PERMISSION_DENIED == permReadStorage ||
                 PackageManager.PERMISSION_DENIED == permWriteStroage ||
                 PackageManager.PERMISSION_DENIED == permMediaControl ||
-                PackageManager.PERMISSION_DENIED == permWakeLock) {
+                PackageManager.PERMISSION_DENIED == permWakeLock ||
+                PackageManager.PERMISSION_DENIED == permSystemAlert ||
+                PackageManager.PERMISSION_DENIED == permBattery ||
+                PackageManager.PERMISSION_DENIED == permFlash) {
             // init permissions dialog
             int requestCode=0;
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
                                                                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                                                     Manifest.permission.MEDIA_CONTENT_CONTROL,
-                                                                    Manifest.permission.WAKE_LOCK}, requestCode);
+                                                                    Manifest.permission.WAKE_LOCK,
+                                                                    Manifest.permission.SYSTEM_ALERT_WINDOW,
+                                                                    Manifest.permission.BATTERY_STATS,
+                                                                    Manifest.permission.FLASHLIGHT
+            }, requestCode);
 
         }
 
